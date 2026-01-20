@@ -22,8 +22,8 @@ The task is this. Let us have some base tagged type, possibly abstract.
          ("Moin!");
 ```
 
-<p>A monolithic approach would be to write a series of packages containing types derived from <i>Greeter</i>.</p>
-<p>Now what if the designer of the application does not know of <i>Norddeutschland_Greeter</i> in adavance. Moreover what if we want to deploy the application and add it later or never? This is where plug-ins come in question. The package implementing <i>Norddeutschland_Greeter</i> is placed in a dynamically linked library which is loaded on demand</p>
+<p>A traditional approach would be to write a series of packages containing types derived from <i>Greeter</i> and link them together statically or dynamically.</p>
+<p>Now what if the designer of the application does not know anything of <i>Norddeutschland_Greeter</i> in adavance. Moreover what if we want to deploy the application and add it later or never? This is where plug-ins come in question. The package implementing <i>Norddeutschland_Greeter</i> is placed in a dynamically linked library which is loaded on demand.</p>
 <p>The interface of the plug-in package is this</p>
 
 ```Ada
@@ -61,7 +61,7 @@ package Plugin_API is
 
 end Plugin_API;
 ```
-<p>Here we added a constructing function Create that takes the plug-in name as the argument and returns the object derived from <i>Greeter</i>. The rest are things for the plug-in implementation. The name of the library entry point to initialize the library and the contructing function that actually does the job.</p>
+<p>Here we added a constructing function <i>Create</i> that takes the plug-in name as the argument and returns the object derived from <i>Greeter</i>. The rest are things for the plug-in implementation. The name of the library entry point to initialize the library and the contructing function that actually does the job.</p>
 <p>Now the application is as simple as this</p>
 
 ```Ada
@@ -75,14 +75,16 @@ begin
 end Plugin_Test;
 ```
 <p>Note that it knows nothing about the implementation, just the name of, The project file too refers only to the plug-in interface:</p>
-<tt>with "plugin_api.gpr";
+
+```
+with "plugin_api.gpr";
 project Plugin_Test is
    for Main         use ("plugin_test.adb");
    for Source_Files use ("plugin_test.adb");
    for Object_Dir   use "obj";
    for Exec_Dir     use "bin";
 end Plugin_Test;
-</tt><br>
+```
 <p>The plug-in implementation is encapsulated into a library</p>
 
 ```Ada
@@ -128,7 +130,9 @@ package body Plugin_Norddeutschland is
 end Plugin_Norddeutschland;
 ```
 <p>The implementation is self-explanatory yet there are some less trivial parts. First the library is initialized manually. It is necessary because if the library would use tasking automatic initialization might dead-lock. Here I show how to deal with manually initialized library. The project file is:</p>
-<tt>with "plugin_api.gpr";
+
+```
+with "plugin_api.gpr";
 library project Plugin_Norddeutschland_Build is
 
    for Library_Name      use "plugin_norddeutschland";
@@ -138,7 +142,8 @@ library project Plugin_Norddeutschland_Build is
    for Source_Files      use ("plugin_norddeutschland.ads", "plugin_norddeutschland.adb");
    for Library_Auto_Init use "False";
    for Library_Interface use ("Plugin_Norddeutschland");
-end Plugin_Norddeutschland_Build;</tt>
+end Plugin_Norddeutschland_Build;
+```
 <p>Take note of <i>Library_Auto_Init</i> and <i>Library_Interface</i>. The later specifies the Ada package exposed by the library. <i>Init</i> from the package is the function called after the library is loaded. It checks if the library was already initialized and if not, it calls the library initialization code. The code is exposed by the builder as a C function with the name &lt;library-name&gt;init. Once initialized it returns the constructing function back.</p>
 <p>On the plug-in API side we have:</p>
 
@@ -167,8 +172,9 @@ package body Plugin_API is
 end Plugin_API;
 ```
 <p>Ada.Containers.Indefinite_Ordered_Maps is used to create a map (<i>Loaded</i>) name to constructing function. When not in the map it tries to load the library. The function Load is placed into a separate body to be able to have implementation dependant on the operating system. I provide here Windows and Linux implementations. The plug-in project file used to build the API library has the scenario variable Target_OS to select the OS:</p>
-<tt>library project Plugin_API_Build is
 
+```
+library project Plugin_API_Build is
    type OS_Type is ("Windows", "Linux");
    Target_OS : OS_Type := external ("Target_OS", "Windows");
 
@@ -183,21 +189,25 @@ end Plugin_API;
       when "Linux" =>
          for Source_Dirs use (".", "linux");
    end case;
-
 end Plugin_API_Build;
-</tt>
+```
 <p>Finally, here is a sequence of building everything togeter (for Linux):<p>
-```bash
+
+```
 gprbuild -XTarget_OS=Linux plugin_api_build.gpr
 gprbuild -XTarget_OS=Linux plugin_test.gpr
 gprbuild -XTarget_OS=Linux plugin_norddeutschland_build.gpr
 ```
 <p>Now go to the <i>bin</i> subdirectory and run the test:</p>
-```bash
+
+```
 cd bin
 ./plugin_test
+
 ```
 <p>You will see:</p>
-<tt>
+
+```
 Norddeutschland says Moin!
-</tt>
+```
+That is all.
