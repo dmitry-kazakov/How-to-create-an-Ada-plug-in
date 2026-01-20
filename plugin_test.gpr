@@ -6,8 +6,6 @@ project Plugin_Test is
    for Source_Files use ("plugin_test.adb");
    for Object_Dir   use "obj";
    for Exec_Dir     use "bin";
---   package Linker is
---      for Default_Switches ("Ada") use ("-lplugin_api");
---   end Linker;
 
 end Plugin_Test;
+
