@@ -144,7 +144,7 @@ library project Plugin_Norddeutschland_Build is
    for Library_Interface use ("Plugin_Norddeutschland");
 end Plugin_Norddeutschland_Build;
 ```
-<p>Take note of <i>Library_Auto_Init</i> and <i>Library_Interface</i>. The later specifies the Ada package exposed by the library. <i>Init</i> from the package is the function called after the library is loaded. It checks if the library was already initialized and if not, it calls the library initialization code. The code is exposed by the builder as a C function with the name &lt;library-name&gt;init. Once initialized it returns the constructing function back.</p>
+<p>Take note of <i>Library_Auto_Init</i> and <i>Library_Interface</i>. The latter specifies the Ada package exposed by the library. <i>Init</i> from the package is the function called after the library is loaded. It checks if the library was already initialized and if not, it calls the library initialization code. The code is exposed by the builder as a C function with the name &lt;library-name&gt;init. Once initialized it returns the constructing function back.</p>
 <p>On the plug-in API side we have:</p>
 
 ```Ada
