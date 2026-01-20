@@ -62,7 +62,7 @@ package Plugin_API is
 end Plugin_API;
 ```
 <p>Here we added a constructing function <i>Create</i> that takes the plug-in name as the argument and returns an object derived from <i>Greeter</i> of the type declared inside the plug-in. The rest are things for the plug-in implementation. The name of the library entry point to initialize the library and the contructing function that actually does the job.</p>
-<p>Now the application is as simple as this</p>
+<p>Now the application is as simple as this:</p>
 
 ```Ada
 with Ada.Text_IO;  use Ada.Text_IO;
@@ -74,7 +74,7 @@ begin
    Put_Line ("Norddeutschland says " & Hello.Greet);
 end Plugin_Test;
 ```
-<p>Note that it knows nothing about the implementation, just the name of, The project file too refers only to the plug-in interface:</p>
+<p>Note that it knows nothing about the implementation, just the name of. The project file too refers only to the plug-in interface:</p>
 
 ```
 with "plugin_api.gpr";
@@ -129,7 +129,7 @@ package body Plugin_Norddeutschland is
 
 end Plugin_Norddeutschland;
 ```
-<p>The implementation is self-explanatory yet there are some less trivial parts. First the library is initialized manually. It is necessary because if the library would use tasking automatic initialization might dead-lock. Here I show how to deal with manually initialized library. The project file is:</p>
+<p>The implementation is self-explanatory yet there are some less trivial parts. First, the library is initialized manually. It is necessary because if the library would use tasking automatic initialization might dead-lock. Here I show how to deal with manually initialized library. The project file is:</p>
 
 ```
 with "plugin_api.gpr";
