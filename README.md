@@ -166,3 +166,38 @@ package body Plugin_API is
 
 end Plugin_API;
 ```
+<p>Ada.Containers.Indefinite_Ordered_Maps is used to create a map (<i>Loaded</i>) name to constructing function. When not in the map it tries to load the library. The function Load is placed into a separate body to be able to have implementation dependant on the operating system. I provide here Windows and Linux implementations. The plug-in project file used to build the API library has the scenario variable Target_OS to select the OS:</p>
+<tt>library project Plugin_API_Build is
+
+   type OS_Type is ("Windows", "Linux");
+   Target_OS : OS_Type := external ("Target_OS", "Windows");
+
+   for Library_Name use "plugin_api";
+   for Library_Kind use "dynamic";
+   for Object_Dir   use "obj";
+   for Library_Dir  use "bin";
+   for Source_Files use ("plugin_api.ads", "plugin_api.adb", "plugin_api-load.adb");
+   case Target_OS is
+      when "Windows" =>
+         for Source_Dirs use (".", "windows");
+      when "Linux" =>
+         for Source_Dirs use (".", "linux");
+   end case;
+
+end Plugin_API_Build;
+</tt>
+<p>Finally, here is a sequence of building everything togeter (for Linux):<p>
+```bash
+gprbuild -XTarget_OS=Linux plugin_api_build.gpr
+gprbuild -XTarget_OS=Linux plugin_test.gpr
+gprbuild -XTarget_OS=Linux plugin_norddeutschland_build.gpr
+```
+<p>Now go to the <i>bin</i> subdirectory and run the test:</p>
+```bash
+cd bin
+./plugin_test
+```
+<p>You will see:</p>
+<tt>
+Norddeutschland says Moin!
+</tt>
