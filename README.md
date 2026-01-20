@@ -191,7 +191,7 @@ library project Plugin_API_Build is
    end case;
 end Plugin_API_Build;
 ```
-<p>Finally, here is a sequence of building everything togeter (for Linux):<p>
+<p>Finally, here is a sequence of building everything together (for Linux):<p>
 
 ```
 gprbuild -XTarget_OS=Linux plugin_api_build.gpr
