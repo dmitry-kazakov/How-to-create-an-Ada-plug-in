@@ -22,7 +22,7 @@ The task is this. Let us have some base tagged type, possibly abstract.
          ("Moin!");
 ```
 
-<p>A traditional approach would be to write a series of packages containing types derived from <i>Greeter</i> and link them together statically or dynamically.</p>
+<p>The traditional approach would be to write a series of packages containing types derived from <i>Greeter</i> and link them together statically or dynamically.</p>
 <p>Now what if the designer of the application does not know anything of <i>Norddeutschland_Greeter</i> in adavance. Moreover what if we want to deploy the application and add it later or never? This is where plug-ins come in question. The package implementing <i>Norddeutschland_Greeter</i> is placed in a dynamically linked library which is loaded on demand.</p>
 <p>The interface of the plug-in package is this</p>
 
