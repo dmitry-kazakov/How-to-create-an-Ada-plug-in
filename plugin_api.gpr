@@ -1,0 +1,10 @@
+library project Plugin_API is
+
+   for Library_Name     use "plugin_api";
+   for Library_Kind     use "dynamic";
+   for Object_Dir       use "obj";
+   for Library_Dir      use "bin";
+   for Externally_Built use "true";
+   for Source_Files use ("plugin_api.ads");
+
+end Plugin_API;

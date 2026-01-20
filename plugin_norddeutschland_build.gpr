@@ -1,0 +1,13 @@
+with "plugin_api.gpr";
+
+library project Plugin_Norddeutschland_Build is
+
+   for Library_Name      use "plugin_norddeutschland";
+   for Library_Kind      use "dynamic";
+   for Object_Dir        use "obj";
+   for Library_Dir       use "bin";
+   for Source_Files      use ("plugin_norddeutschland.ads", "plugin_norddeutschland.adb");
+   for Library_Auto_Init use "False";
+   for Library_Interface use ("Plugin_Norddeutschland");
+
+end Plugin_Norddeutschland_Build;
