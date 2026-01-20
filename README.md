@@ -61,7 +61,7 @@ package Plugin_API is
 
 end Plugin_API;
 ```
-<p>Here we added a constructing function <i>Create</i> that takes the plug-in name as the argument and returns an object derived from <i>Greeter</i> of the type declared inside the plug-in. The rest are things for the plug-in implementation. The name of the library entry point to initialize the library and the contructing function that actually does the job.</p>
+<p>Here we added a constructing function <i>Create</i> that takes the plug-in name as the argument and returns an object derived from <i>Greeter</i> of the type declared inside the plug-in. The rest are things for the plug-in implementation. The name of the library entry point to initialize the library and the constructing function that actually does the job.</p>
 <p>Now the application is as simple as this:</p>
 
 ```Ada
