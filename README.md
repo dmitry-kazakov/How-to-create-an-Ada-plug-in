@@ -171,7 +171,7 @@ package body Plugin_API is
 
 end Plugin_API;
 ```
-<p>Ada.Containers.Indefinite_Ordered_Maps is used to create a map (<i>Loaded</i>) name to constructing function. When not in the map it tries to load the library. The function Load is placed into a separate body to be able to have implementation dependant on the operating system. I provide here Windows and Linux implementations. The plug-in project file used to build the API library has the scenario variable Target_OS to select the OS:</p>
+<p>Ada.Containers.Indefinite_Ordered_Maps is used to create a map (<i>Loaded</i>) name to constructing function. When not in the map it tries to load the library. The function Load is placed into a separate body to be able to have an implementation dependent on the operating system. I provide here Windows and Linux implementations. The plug-in project file used to build the API library has the scenario variable Target_OS to select the OS:</p>
 
 ```
 library project Plugin_API_Build is
