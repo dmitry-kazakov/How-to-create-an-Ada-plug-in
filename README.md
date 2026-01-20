@@ -75,15 +75,94 @@ begin
 end Plugin_Test;
 ```
 <p>Note that it knows nothing about the implementation, just the name of, The project file too refers only to the plug-in interface:</p>
-<tt>
-with "plugin_api.gpr";
-
+<tt>with "plugin_api.gpr";
 project Plugin_Test is
-
    for Main         use ("plugin_test.adb");
    for Source_Files use ("plugin_test.adb");
    for Object_Dir   use "obj";
    for Exec_Dir     use "bin";
+end Plugin_Test;
+</tt><br>
+<p>The plug-in implementation is encapsulated into a library</p>
 
-end Plugin_Test;  
-</tt>
+```Ada
+with PlugIn_API;
+
+package Plugin_Norddeutschland is
+
+   type Norddeutschland_Greeter is
+      new PlugIn_API.Greeter with null record;
+   overriding
+      function Greet (Object : Norddeutschland_Greeter) return String is
+         ("Moin!");
+
+private
+   function Init return PlugIn_API.Factory with
+      Export => True, External_Name => "plugin_init";
+
+end Plugin_Norddeutschland;
+```
+<p>The package body:</p>
+
+```Ada
+package body Plugin_Norddeutschland is
+
+   Initialized : Boolean := False;
+
+   function Constructor return PlugIn_API.Greeter'Class is
+   begin
+      return Norddeutschland_Greeter'(PlugIn_API.Greeter with null record);
+   end Constructor;
+
+   function Init return PlugIn_API.Factory is
+      procedure Do_Init;
+      pragma Import (C, Do_Init, "plugin_norddeutschlandinit");
+   begin
+      if not Initialized then -- Initialize library
+         Initialized := True;
+         Do_Init;
+      end if;
+      return Constructor'Access;
+   end Init;
+
+end Plugin_Norddeutschland;
+```
+<p>The implementation is self-explanatory yet there are some less trivial parts. First the library is initialized manually. It is necessary because if the library would use tasking automatic initialization might dead-lock. Here I show how to deal with manually initialized library. The project file is:</p>
+<tt>with "plugin_api.gpr";
+library project Plugin_Norddeutschland_Build is
+
+   for Library_Name      use "plugin_norddeutschland";
+   for Library_Kind      use "dynamic";
+   for Object_Dir        use "obj";
+   for Library_Dir       use "bin";
+   for Source_Files      use ("plugin_norddeutschland.ads", "plugin_norddeutschland.adb");
+   for Library_Auto_Init use "False";
+   for Library_Interface use ("Plugin_Norddeutschland");
+end Plugin_Norddeutschland_Build;</tt>
+<p>Take note of <i>Library_Auto_Init</i> and <i>Library_Interface</i>. The later specifies the Ada package exposed by the library. <i>Init</i> from the package is the function called after the library is loaded. It checks if the library was already initialized and if not, it calls the library initialization code. The code is exposed by the builder as a C function with the name &lt;library-name&gt;init. Once initialized it returns the constructing function back.</p>
+<p>On the plug-in API side we have:</p>
+
+```Ada
+with Ada.Containers.Indefinite_Ordered_Maps;
+
+package body Plugin_API is
+--
+-- Map plugin name -> factory function
+--
+   package Plugin_Maps is
+      new Ada.Containers.Indefinite_Ordered_Maps (String, Factory);
+
+   Loaded : Plugin_Maps.Map;
+
+   function Load (Library_File : String) return Factory is separate;
+
+   function Create (Name : String) return Greeter'Class is
+   begin
+      if not Loaded.Contains (Name) then
+         Loaded.Insert (Name, Load (Name));
+      end if;
+      return Loaded.Element (Name).all;
+   end Create;
+
+end Plugin_API;
+```
