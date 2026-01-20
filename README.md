@@ -85,7 +85,7 @@ project Plugin_Test is
    for Exec_Dir     use "bin";
 end Plugin_Test;
 ```
-<p>The plug-in implementation is encapsulated into a library</p>
+<p>The plug-in implementation is encapsulated into a package in of a dynamically loaded library.</p>
 
 ```Ada
 with PlugIn_API;
